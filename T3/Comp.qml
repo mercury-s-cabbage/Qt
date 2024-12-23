@@ -1,17 +1,78 @@
 import QtQuick 2.0
 
 Rectangle {
-    id: rect1
-    width: 300
-    height: 100
+    id: comp
+    width: 100
+    height: 50
     border.width: 1
-    color: Qt.rgba(Math.random(), Math.random(), Math.random(), 0.7)
+    radius: 5
+    color: "gray" // Начальный цвет
 
-    property string text: ""
+    property alias text: label.text
+    property alias fontSize: label.font.pixelSize
 
     Text {
-        text: rect1.text
-        anchors.centerIn: rect1
-        font.pixelSize: 24
+        id: label
+        anchors.centerIn: parent
+        font.pixelSize: 18
+        color: "white"
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+    }
+
+    states: [
+        State {
+            name: "selected"
+            PropertyChanges {
+                target: comp
+                color: "green" // Цвет в выбранном состоянии
+            }
+        },
+        State {
+            name: "default"
+            PropertyChanges {
+                target: comp
+                color: "gray" // Цвет в обычном состоянии
+            }
+        }
+    ]
+
+    transitions: [
+        // Плавная анимация перехода от одного состояния к другому
+        Transition {
+            from: "default"
+            to: "selected"
+            reversible: true
+            ParallelAnimation {
+                ColorAnimation {
+                    target: comp
+                    property: "color"
+                    duration: 500
+                    easing.type: Easing.InOutQuad
+                }
+            }
+        },
+        Transition {
+            from: "selected"
+            to: "default"
+            reversible: true
+            ParallelAnimation {
+                ColorAnimation {
+                    target: comp
+                    property: "color"
+                    duration: 500
+                    easing.type: Easing.InOutQuad
+                }
+            }
+        }
+    ]
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            // Меняем состояние при клике
+            comp.state = comp.state === "selected" ? "default" : "selected";
+        }
     }
 }
+
